@@ -278,3 +278,78 @@ canvas {
     transform: translateY(0);
   }
 }
+
+/* =============================
+   Custom designed cursor (SVG)
+   - Default arrow for everything
+   - Pointer variant for interactive elements
+   - Falls back to system cursors
+   - Disabled on touch devices
+============================= */
+:root {
+  /* Elegant arrow cursor (black with subtle shadow) */
+  --cursor-default-svg: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48ZGVmcz48ZmlsdGVyIGlkPSdzJyB4PScwJyB5PScwJyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIGZpbHRlclVuaXRzPSdvYmplY3RCb3VuZGluZ0JveCc+PGZlR2F1c3NpYW5CbHVyIHN0ZE5ldj0nMiIgLz48L2ZpbHRlcj48L2RlZnM+PHBhdGggZmlsdGVyPSJ1cmwoI3MpIiBkPSdNNSA0LjVsMTEuNSAxLjUtNyA3IDIgNyAtNC4zLTQuMy00LjMgNC4zLTEuNy02LjcgNy02TDUgNC41eicgZmlsbD0nIzAwMCcvPjwvc3ZnPg==");
+
+  /* Pointer state: bold arrow with accent */
+  --cursor-pointer-svg: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjQnIGhlaWdodD0nMjQnIHZpZXdCb3g9JzAgMCAyNCAyNCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48ZGVmcz48ZmlsdGVyIGlkPSdzMicgeD0nMCcgeT0nMCcgd2lkdGg9JzI0JyBoZWlnaHQ9JzI0JyBmaWx0ZXJVbml0cz0nb2JqZWN0Qm91bmRpbmdCb3gnPjxmZUdhdXNzaWFuQmx1ciBzdGREZXY9JzEuNScgLz48L2ZpbHRlcj48L2RlZnM+PHBhdGggZmlsdGVyPSJ1cmwoI3MyKSIgZD0nTTQuNSA0LjVsMTIuNSAydC03LjUgNi41IDEuNSA3LjUtNC4zLTQuMy00LjMgNC4zLTEuNy02LjcgNy02TC00LjUgNC41eicgZmlsbD0nI0E4NTVGNycvPjwvc3ZnPg==");
+}
+
+/* Apply custom cursors globally */
+body {
+  cursor: none; /* hide system cursor globally for fancy cursor */
+}
+
+/* Interactive elements use pointer variant */
+a, button, [role="button"], input[type="button"], input[type="submit"], .cursor-pointer {
+  cursor: none;
+}
+
+/* Respect coarse pointers (touch) */
+@media (pointer: coarse) {
+  body, a, button, [role="button"], input[type="button"], input[type="submit"], .cursor-pointer {
+    cursor: auto;
+  }
+}
+
+/* Opt-out utility: add class on root to use system cursor */
+.use-system-cursor *, .use-system-cursor {
+  cursor: auto !important;
+}
+
+/* Fancy cursor visuals */
+.fancy-cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--foreground);
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  transform: translate(-100px, -100px);
+  transition: opacity 120ms ease;
+  opacity: 0;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.fancy-cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  border: 2px solid rgba(99,102,241,0.9); /* indigo-500 */
+  box-shadow: 0 0 20px rgba(99,102,241,0.35);
+  transform: translate(-100px, -100px);
+  transition: opacity 180ms ease, transform 120ms ease;
+  opacity: 0;
+  z-index: 99998;
+  pointer-events: none;
+}
+
+/* Respect coarse pointers (touch) by restoring system cursor */
+@media (pointer: coarse) {
+  .fancy-cursor-dot, .fancy-cursor-ring { display: none; }
+}

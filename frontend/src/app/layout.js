@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Header, AOSProvider } from "../components/ui";
+import { Header, AOSProvider, FancyCursor } from "../components/ui";
 import Footer from "../components/footer";
 
 const geistSans = Geist({
@@ -79,7 +79,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -95,6 +95,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased bg-gray-50 text-gray-800`}
       >
         <AOSProvider>
+          <FancyCursor />
           {/* Main Navigation */}
           <Header
             title="Story"

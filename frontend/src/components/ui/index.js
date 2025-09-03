@@ -13,3 +13,4 @@ export { default as HeroSection } from './HeroSection';
 export { default as AOSProvider } from './AOSProvider';
 export { default as ThreeJSBackground } from './ThreeJSBackground';
 export { Heading, Subtitle, BodyText, Caption } from './Typography';
+export { default as FancyCursor } from './FancyCursor';
