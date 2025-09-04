@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { EyeIcon, EyeSlashIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function AdminLogin() {
@@ -9,23 +10,34 @@ export default function AdminLogin() {
     email: '',
     password: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [backendStatus, setBackendStatus] = useState('checking');
   const router = useRouter();
 
-  // Check backend status on page load
-  useState(() => {
+  useEffect(() => {
     checkBackendStatus();
-  });
+    
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    if (token && token !== 'undefined' && token !== 'null' && token.length >= 20) {
+      router.push('/admin');
+    }
+  }, [router]);
 
   const checkBackendStatus = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/health', { 
+      const response = await fetch('http://localhost:5001/api/health', {
         method: 'GET',
-        signal: AbortSignal.timeout(3000) // 3 second timeout
+        signal: AbortSignal.timeout(5000) // 5 second timeout
       });
-      setBackendStatus('online');
+      
+      if (response.ok) {
+        setBackendStatus('online');
+      } else {
+        setBackendStatus('offline');
+      }
     } catch (error) {
       setBackendStatus('offline');
     }
@@ -33,19 +45,6 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Basic validation first
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    // Check if backend is available
-    if (backendStatus === 'offline') {
-      setError('Backend server is not available. Please try again later.');
-      return;
-    }
-
     setLoading(true);
     setError('');
 
@@ -53,82 +52,103 @@ export default function AdminLogin() {
       const response = await fetch('http://localhost:5001/api/auth/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-
       const data = await response.json();
+      
+      console.log('🔍 LOGIN DEBUG:');
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      console.log('Full response data:', data);
+      console.log('Data success:', data.success);
+      console.log('Data token:', data.token);
+      console.log('Data data:', data.data);
+      console.log('Token type:', typeof data.token);
+      console.log('Token length:', data.token ? data.token.length : 'N/A');
 
-      if (data.data.role === 'admin' || data.data.role === 'author') {
+      if (response.ok && data.success) {
+        // Check if token exists in the response
+        if (!data.token) {
+          console.error('No token received in response:', data);
+          setError('Login failed: No authentication token received');
+          return;
+        }
+        
+        // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.data));
+        
+        console.log('Token stored:', data.token);
+        console.log('User data stored:', data.data);
+        
+        // Redirect to admin dashboard
         router.push('/admin');
       } else {
-        setError('Access denied. Admin or author role required.');
+        setError(data.message || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
-      setError(error.message || 'Login failed. Please check your credentials.');
+      console.error('Login error:', error);
+      setError('Network error. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Admin Login
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Sign in to your blog administration panel
-        </p>
-        
-        {/* Backend Status Indicator */}
-        <div className="mt-4 flex items-center justify-center">
-          <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-            backendStatus === 'online' 
-              ? 'bg-green-100 text-green-800' 
-              : backendStatus === 'offline'
-              ? 'bg-red-100 text-red-800'
-              : 'bg-yellow-100 text-yellow-800'
-          }`}>
-            <div className={`w-2 h-2 rounded-full mr-2 ${
-              backendStatus === 'online' 
-                ? 'bg-green-400' 
-                : backendStatus === 'offline'
-                ? 'bg-red-400'
-                : 'bg-yellow-400'
-            }`}></div>
-            {backendStatus === 'online' 
-              ? 'Backend Online' 
-              : backendStatus === 'offline'
-              ? 'Backend Offline'
-              : 'Checking Backend...'
-            }
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <div className="mx-auto w-30 h-30 rounded-2xl flex items-center justify-center shadow-2xl mb-6">
+            <Link href='/'>
+           <img src='/logo.png' />
+            </Link>
           </div>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
+          <div className="flex justify-center mb-4 h-1">
+            <img 
+              src="/hboder_w.svg" 
+              alt="Decorative border" 
+              className="h-55 object-center w-auto opacity-80 filter brightness-0 dark:brightness-0 dark:invert -translate-y-28"
+            />
+          </div>
+          <p className="text-gray-600 dark:text-gray-300 text-lg ">Sign in For Writers</p>
         </div>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        {/* Backend Status */}
+        {backendStatus === 'checking' && (
+          <div className="flex items-center justify-center p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl">
+            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200">
+              <div className="w-2 h-2 rounded-full mr-2 bg-yellow-400 animate-pulse"></div>
+              Checking Backend...
+            </div>
+          </div>
+        )}
+
+        {backendStatus === 'offline' && (
+          <div className="flex items-center justify-center p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl">
+            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200">
+              <div className="w-2 h-2 rounded-full mr-2 bg-red-400"></div>
+              Backend Offline
+            </div>
+          </div>
+        )}
+
+        {/* Login Form */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-600/50 p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-                {error}
-              </div>
-            )}
-
+            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                Email Address
               </label>
-              <div className="mt-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <UserIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                </div>
                 <input
                   id="email"
                   name="email"
@@ -137,56 +157,100 @@ export default function AdminLogin() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter your email"
                 />
               </div>
             </div>
 
+            {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Password
               </label>
-              <div className="mt-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LockClosedIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                </div>
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Enter your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  )}
+                </button>
               </div>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4">
+                <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || backendStatus === 'offline'}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  'Sign in'
+                )}
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
+          {/* Demo Credentials */}
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
+                <span className="px-4 bg-white text-gray-500 font-medium">Demo Credentials</span>
               </div>
             </div>
-
             <div className="mt-6 text-center">
-              <Link href="/" className="text-indigo-600 hover:text-indigo-500">
-                Back to main site
-              </Link>
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Email:</span> admin@storyweaver.com
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Password:</span> admin123
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-sm text-gray-500">
+            Having trouble? Contact your administrator
+          </p>
         </div>
       </div>
     </div>

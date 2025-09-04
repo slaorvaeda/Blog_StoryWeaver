@@ -2,11 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { UserIcon, ShieldCheckIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { RoleGuard } from '@/components/admin';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
+  const [user, setUser] = useState(null);
+
+  // Get current user from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -73,14 +83,28 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Users</h1>
-        <p className="mt-2 text-gray-600">
-          Manage user accounts and permissions.
-        </p>
-      </div>
+    <RoleGuard 
+      requiredRole="admin" 
+      user={user}
+      fallback={
+        <div className="space-y-6">
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+            <p className="text-gray-600">
+              This page requires administrator privileges.
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+          <p className="mt-2 text-gray-600">
+            Manage user accounts and permissions.
+          </p>
+        </div>
 
       {/* Users Table */}
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
@@ -136,6 +160,7 @@ export default function AdminUsers() {
           ))}
         </ul>
       </div>
-    </div>
+      </div>
+    </RoleGuard>
   );
 }

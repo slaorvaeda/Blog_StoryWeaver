@@ -154,7 +154,7 @@ export default function AdminSettings() {
                         Site Information
                       </h3>
                       <div className="mt-2 text-sm text-blue-700">
-                        <p>Configure your blog's title, description, and other site-wide settings.</p>
+                        <p>Configure your blog&apos;s title, description, and other site-wide settings.</p>
                       </div>
                     </div>
                   </div>

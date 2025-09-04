@@ -8,7 +8,10 @@ import {
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CalendarIcon,
+  ClockIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 export default function AdminPosts() {
@@ -61,13 +64,13 @@ export default function AdminPosts() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      published: 'bg-green-100 text-green-800',
-      draft: 'bg-yellow-100 text-yellow-800',
-      archived: 'bg-gray-100 text-gray-800'
+      published: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      draft: 'bg-amber-100 text-amber-800 border-amber-200',
+      archived: 'bg-slate-100 text-slate-800 border-slate-200'
     };
     
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badges[status]}`}>
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${badges[status] || badges.draft}`}>
         {status}
       </span>
     );
@@ -76,7 +79,12 @@ export default function AdminPosts() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <DocumentTextIcon className="h-6 w-6 text-white" />
+          </div>
+          <p className="text-slate-600">Loading your stories...</p>
+        </div>
       </div>
     );
   }
@@ -84,55 +92,135 @@ export default function AdminPosts() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Posts</h1>
-          <p className="mt-2 text-gray-600">
-            Manage your blog posts, drafts, and published content.
-          </p>
+      <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-indigo-50 rounded-3xl p-8 border border-blue-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">Story Management</h1>
+            <p className="text-lg text-slate-600">
+              Manage your blog posts, drafts, and published content with ease.
+            </p>
+          </div>
+          <Link
+            href="/admin/posts/new"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200"
+          >
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Create New Story
+          </Link>
         </div>
-        <Link
-          href="/admin/posts/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <PlusIcon className="h-5 w-5 mr-2" />
-          New Post
-        </Link>
+      </div>
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Total Stories</p>
+              <p className="text-3xl font-bold text-slate-900">{posts.length}</p>
+            </div>
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+              <DocumentTextIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Published</p>
+              <p className="text-3xl font-bold text-slate-900">
+                {posts.filter(post => post.status === 'published').length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+              <EyeIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Drafts</p>
+              <p className="text-3xl font-bold text-slate-900">
+                {posts.filter(post => post.status === 'draft').length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+              <ClockIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Total Views</p>
+              <p className="text-3xl font-bold text-slate-900">
+                {posts.reduce((sum, post) => sum + (post.views || 0), 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+              <EyeIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Posts Table */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            All Posts ({posts.length})
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+        <div className="p-6 border-b border-slate-200">
+          <h3 className="text-xl font-bold text-slate-800">
+            All Stories ({posts.length})
           </h3>
         </div>
         
         {posts.length > 0 ? (
-          <ul className="divide-y divide-gray-200">
+          <div className="divide-y divide-slate-100">
             {posts.map((post) => (
-              <li key={post._id} className="px-4 py-4">
+              <div key={post._id} className="p-6 hover:bg-slate-50 transition-all duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <h4 className="text-sm font-medium text-gray-900 truncate">
-                        {post.title}
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h4 className="text-lg font-semibold text-slate-900 truncate">
+                        {post.title || post.name}
                       </h4>
                       {getStatusBadge(post.status)}
                     </div>
-                    <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Created: {new Date(post.createdAt).toLocaleDateString()}</span>
+                    <div className="flex items-center space-x-6 text-sm text-slate-500">
+                      <div className="flex items-center space-x-1">
+                        <CalendarIcon className="h-4 w-4" />
+                        <span>Created: {new Date(post.createdAt).toLocaleDateString()}</span>
+                      </div>
                       {post.publishedAt && (
-                        <span>Published: {new Date(post.publishedAt).toLocaleDateString()}</span>
+                        <div className="flex items-center space-x-1">
+                          <EyeIcon className="h-4 w-4" />
+                          <span>Published: {new Date(post.publishedAt).toLocaleDateString()}</span>
+                        </div>
                       )}
-                      <span>Views: {post.views}</span>
+                      <div className="flex items-center space-x-1">
+                        <EyeIcon className="h-4 w-4" />
+                        <span>{post.views || 0} views</span>
+                      </div>
+                      {post.author && (
+                        <div className="flex items-center space-x-1">
+                          <UserIcon className="h-4 w-4" />
+                          <span>{post.author.name || post.author}</span>
+                        </div>
+                      )}
                     </div>
+                    {post.excerpt && (
+                      <p className="mt-2 text-sm text-slate-600 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    )}
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 ml-6">
                     <Link
                       href={`/admin/posts/${post._id}/edit`}
-                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                      title="Edit post"
                     >
                       <PencilIcon className="h-5 w-5" />
                     </Link>
@@ -141,61 +229,62 @@ export default function AdminPosts() {
                         setSelectedPost(post);
                         setShowDeleteModal(true);
                       }}
-                      className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                      title="Delete post"
                     >
                       <TrashIcon className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <div className="px-4 py-12 text-center">
-            <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No posts</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Get started by creating your first blog post.
+          <div className="px-6 py-16 text-center">
+            <DocumentTextIcon className="mx-auto h-16 w-16 text-slate-300 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No stories yet</h3>
+            <p className="text-slate-500 mb-6">
+              Start writing your first masterpiece and share it with the world.
             </p>
-            <div className="mt-6">
-              <Link
-                href="/admin/posts/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                <PlusIcon className="h-5 w-5 mr-2" />
-                New Post
-              </Link>
-            </div>
+            <Link
+              href="/admin/posts/new"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Create Your First Story
+            </Link>
           </div>
         )}
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg font-medium text-gray-900">Delete Post</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to delete "{selectedPost?.title}"? This action cannot be undone.
-                </p>
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-6 border w-96 shadow-2xl rounded-2xl bg-white">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrashIcon className="h-8 w-8 text-red-600" />
               </div>
-              <div className="items-center px-4 py-3">
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700"
-                >
-                  Delete
-                </button>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Story</h3>
+              <p className="text-slate-600 mb-6">
+                Are you sure you want to delete &quot;{selectedPost?.title || selectedPost?.name}&quot;? 
+                This action cannot be undone.
+              </p>
+              <div className="flex space-x-3">
                 <button
                   onClick={() => {
                     setShowDeleteModal(false);
                     setSelectedPost(null);
                   }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-24 hover:bg-gray-400"
+                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-all duration-200"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all duration-200"
+                >
+                  Delete Story
                 </button>
               </div>
             </div>

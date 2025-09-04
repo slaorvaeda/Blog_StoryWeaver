@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Header, AOSProvider, FancyCursor } from "../components/ui";
-import Footer from "../components/footer";
+import { AOSProvider, FancyCursor } from "@/components/ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,14 +41,7 @@ export const metadata = {
     description: "A storyteller's blog where imagination meets reality through captivating tales and adventures",
     url: 'https://storyweaver.com',
     siteName: 'Story Weaver',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Story Weaver - Tales & Adventures',
-      },
-    ],
+    images: ['/og-image.jpg'],
     locale: 'en_US',
     type: 'website',
   },
@@ -96,22 +88,7 @@ export default function RootLayout({ children }) {
       >
         <AOSProvider>
           <FancyCursor />
-          {/* Main Navigation */}
-          <Header
-            title="Story"
-            subtitle="Weaver"
-            navItems={["Home", "Stories", "About", "Contact"]}
-            showSearch={true}
-          />
-
-          {/* Page Content */}
-          <main className="min-h-screen">
-            {children}
-          </main>
-
-          {/* Footer */}
-          <Footer />
-       
+          {children}
         </AOSProvider>
       </body>
     </html>

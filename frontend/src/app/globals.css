@@ -5,63 +5,115 @@ html {
 }
 
 :root {
-  /* Primary Theme Colors */
-  --primary-50: #faf5ff;
-  --primary-100: #f3e8ff;
-  --primary-200: #e9d5ff;
-  --primary-300: #d8b4fe;
-  --primary-400: #c084fc;
-  --primary-500: #a855f7;
-  --primary-600: #9333ea;
-  --primary-700: #7c3aed;
-  --primary-800: #6b21a8;
-  --primary-900: #581c87;
+  /* Modern Admin Color Palette */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-300: #7dd3fc;
+  --primary-400: #38bdf8;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  --primary-800: #075985;
+  --primary-900: #0c4a6e;
   
-  /* Secondary Theme Colors */
-  --secondary-50: #eff6ff;
-  --secondary-100: #dbeafe;
-  --secondary-200: #bfdbfe;
-  --secondary-300: #93c5fd;
-  --secondary-400: #60a5fa;
-  --secondary-500: #3b82f6;
-  --secondary-600: #2563eb;
-  --secondary-700: #1d4ed8;
-  --secondary-800: #1e40af;
-  --secondary-900: #1e3a8a;
+  /* Secondary Colors - Deep Ocean */
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+  
+  /* Accent Colors - Emerald */
+  --accent-50: #ecfdf5;
+  --accent-100: #d1fae5;
+  --accent-200: #a7f3d0;
+  --accent-300: #6ee7b7;
+  --accent-400: #34d399;
+  --accent-500: #10b981;
+  --accent-600: #059669;
+  --accent-700: #047857;
+  --accent-800: #065f46;
+  --accent-900: #064e3b;
+  
+  /* Success Colors */
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  --success-800: #166534;
+  --success-900: #14532d;
+  
+  /* Warning Colors */
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-800: #92400e;
+  --warning-900: #78350f;
+  
+  /* Error Colors */
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  --error-700: #b91c1c;
+  --error-800: #991b1b;
+  --error-900: #7f1d1d;
   
   /* Neutral Colors */
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
   
   /* Background Colors */
-  --background: #f9fafb;
-  --foreground: #111827;
+  --background: #fafafa;
+  --foreground: #171717;
   --card-bg: #ffffff;
-  --sidebar-bg: #f3f4f6;
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
   
   /* Text Colors */
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --text-primary: #171717;
+  --text-secondary: #525252;
+  --text-muted: #a3a3a3;
+  --text-inverse: #ffffff;
   
   /* Border Colors */
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-dark: #9ca3af;
+  --border-accent: #0ea5e9;
   
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 @theme inline {
@@ -69,22 +121,25 @@ html {
   --color-foreground: var(--foreground);
   --color-primary: var(--primary-600);
   --color-secondary: var(--secondary-600);
+  --color-accent: var(--accent-600);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
-    --foreground: #f8fafc;
-    --card-bg: #1e293b;
-    --sidebar-bg: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    --border-light: #334155;
-    --border-medium: #475569;
-    --border-dark: #64748b;
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+    --card-bg: #1a1a1a;
+    --sidebar-bg: #000000;
+    --sidebar-hover: #1a1a1a;
+    --text-primary: #fafafa;
+    --text-secondary: #a3a3a3;
+    --text-muted: #737373;
+    --text-inverse: #171717;
+    --border-light: #262626;
+    --border-medium: #404040;
+    --border-dark: #525252;
   }
 }
 
@@ -352,4 +407,492 @@ a, button, [role="button"], input[type="button"], input[type="submit"], .cursor-
 /* Respect coarse pointers (touch) by restoring system cursor */
 @media (pointer: coarse) {
   .fancy-cursor-dot, .fancy-cursor-ring { display: none; }
+}
+
+/* Admin-specific utility classes */
+.bg-admin-primary {
+  background: var(--primary-600);
+}
+
+.bg-admin-secondary {
+  background: var(--secondary-600);
+}
+
+.bg-admin-accent {
+  background: var(--accent-600);
+}
+
+.bg-admin-success {
+  background: var(--success-600);
+}
+
+.bg-admin-warning {
+  background: var(--warning-600);
+}
+
+.bg-admin-error {
+  background: var(--error-600);
+}
+
+.text-admin-primary {
+  color: var(--primary-600);
+}
+
+.text-admin-secondary {
+  color: var(--secondary-600);
+}
+
+.text-admin-accent {
+  color: var(--accent-600);
+}
+
+.text-admin-success {
+  color: var(--success-600);
+}
+
+.text-admin-warning {
+  color: var(--warning-600);
+}
+
+.text-admin-error {
+  color: var(--error-600);
+}
+
+.border-admin-primary {
+  border-color: var(--primary-600);
+}
+
+.border-admin-secondary {
+  border-color: var(--secondary-600);
+}
+
+.border-admin-accent {
+  border-color: var(--accent-600);
+}
+
+/* Admin gradients */
+.bg-admin-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+}
+
+.bg-admin-gradient-secondary {
+  background: linear-gradient(135deg, var(--secondary-800), var(--secondary-900));
+}
+
+.bg-admin-gradient-accent {
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
+}
+
+.bg-admin-gradient-hero {
+  background: linear-gradient(135deg, var(--primary-50), var(--secondary-50), var(--accent-50));
+}
+
+/* Admin shadows */
+.shadow-admin-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-admin-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-admin-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-admin-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+.shadow-admin-2xl {
+  box-shadow: var(--shadow-2xl);
+}
+
+/* Admin glass effects */
+.glass-admin {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-admin-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.glass-admin-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Admin animations */
+@keyframes adminFadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminSlideIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+}
+
+@keyframes adminScaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+.admin-fade-in {
+  animation: adminFadeIn 0.6s ease-out;
+}
+
+.admin-slide-in {
+  animation: adminSlideIn 0.5s ease-out;
+}
+
+.admin-scale-in {
+  animation: adminScaleIn 0.4s ease-out;
+}
+
+/* Admin hover effects */
+.hover-admin-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-admin-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.hover-admin-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-admin-glow:hover {
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+/* Admin focus states */
+.focus-admin-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.2s ease;
+}
+
+.focus-admin-ring:focus {
+  outline-color: var(--primary-600);
+}
+
+/* Admin spacing utilities */
+.admin-section-padding {
+  padding: 2rem 0;
+}
+
+.admin-container-width {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Admin responsive utilities */
+@media (min-width: 640px) {
+  .admin-container-width {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-container-width {
+    padding: 0 2.5rem;
+  }
+}
+
+/* Admin status indicators */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.status-active {
+  background: var(--success-500);
+  box-shadow: 0 0 0 2px var(--success-100);
+}
+
+.status-inactive {
+  background: var(--gray-400);
+  box-shadow: 0 0 0 2px var(--gray-100);
+}
+
+.status-pending {
+  background: var(--warning-500);
+  box-shadow: 0 0 0 2px var(--warning-100);
+}
+
+.status-error {
+  background: var(--error-500);
+  box-shadow: 0 0 0 2px var(--error-100);
+}
+
+/* Admin loading states */
+.admin-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: adminShimmer 1.5s infinite;
+}
+
+@keyframes adminShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Admin table styles */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-table th {
+  background: var(--gray-50);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-600);
+}
+
+.admin-table tr:hover {
+  background: var(--gray-50);
+}
+
+/* Admin form styles */
+.admin-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  background: white;
+  color: var(--gray-900);
+  transition: all 0.2s ease;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.admin-input:disabled {
+  background: var(--gray-100);
+  color: var(--gray-500);
+  cursor: not-allowed;
+}
+
+/* Admin button styles */
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  gap: 0.5rem;
+}
+
+.admin-btn-primary {
+  background: var(--primary-600);
+  color: white;
+}
+
+.admin-btn-primary:hover {
+  background: var(--primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-btn-secondary {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.admin-btn-secondary:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-400);
+}
+
+.admin-btn-success {
+  background: var(--success-600);
+  color: white;
+}
+
+.admin-btn-success:hover {
+  background: var(--success-700);
+}
+
+.admin-btn-warning {
+  background: var(--warning-600);
+  color: white;
+}
+
+.admin-btn-warning:hover {
+  background: var(--warning-700);
+}
+
+.admin-btn-error {
+  background: var(--error-600);
+  color: white;
+}
+
+.admin-btn-error:hover {
+  background: var(--error-700);
+}
+
+/* Admin card styles */
+.admin-card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.admin-card-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.admin-card-body {
+  padding: 1.5rem;
+}
+
+.admin-card-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Admin sidebar styles */
+.admin-sidebar {
+  background: var(--sidebar-bg);
+  color: var(--text-inverse);
+  border-right: 1px solid var(--border-dark);
+}
+
+.admin-sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-inverse);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  margin: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.admin-sidebar-item:hover {
+  background: var(--sidebar-hover);
+  color: var(--text-inverse);
+}
+
+.admin-sidebar-item.active {
+  background: var(--primary-600);
+  color: white;
+}
+
+/* Admin header styles */
+.admin-header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Admin dashboard specific styles */
+.admin-dashboard-hero {
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-50) 50%, var(--accent-50) 100%);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .admin-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Admin responsive utilities */
+@media (max-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-container-width {
+    padding: 0 1rem;
+  }
+  
+  .admin-dashboard-hero {
+    padding: 2rem 1rem;
+  }
 }

@@ -1,193 +1,238 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { 
-  HomeIcon, 
-  DocumentTextIcon, 
-  FolderIcon, 
-  UsersIcon, 
-  ChartBarIcon,
-  CogIcon,
-  ArrowLeftOnRectangleIcon
-} from '@heroicons/react/24/outline';
+import { useRouter, usePathname } from 'next/navigation';
+import { Sidebar, Header, LoadingSpinner } from '@/components/admin';
 
 export default function AdminLayout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Helper function to check user permissions
+  const hasPermission = (requiredRole) => {
+    if (!user) return false;
+    if (requiredRole === 'admin') return user.role === 'admin';
+    if (requiredRole === 'author') return user.role === 'admin' || user.role === 'author';
+    return false;
+  };
+
+  // Check if current page requires admin-only access
+  const isAdminOnlyPage = () => {
+    const adminOnlyRoutes = [
+      '/admin/users',
+      '/admin/analytics',
+      '/admin/settings'
+    ];
+    return adminOnlyRoutes.includes(pathname);
+  };
+
+  // Function to clear corrupted tokens
+  const clearCorruptedToken = () => {
+    console.log('Clearing corrupted token from localStorage');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.clear();
+  };
 
   useEffect(() => {
-    // Check if user is logged in and has admin/author role
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      router.push('/admin/login');
+    // Don't run auth check for login page
+    if (pathname === '/admin/login') {
+      setLoading(false);
       return;
     }
 
-    // Get user data from localStorage first (faster)
-    const userData = localStorage.getItem('user');
-    if (userData) {
+    const checkAuth = async () => {
       try {
-        const user = JSON.parse(userData);
-        if (user.role === 'admin' || user.role === 'author') {
-          setUser(user);
-          return; // Use cached data, no need to fetch
+        const token = localStorage.getItem('token');
+        
+        console.log('🔍 CHECKING LOCALSTORAGE:');
+        console.log('Token exists:', !!token);
+        console.log('Token value:', token);
+        console.log('All localStorage keys:', Object.keys(localStorage));
+        console.log('localStorage contents:', localStorage);
+        
+        if (!token) {
+          console.log('❌ No token found in localStorage, redirecting to login');
+          router.push('/admin/login');
+          return;
         }
+
+        // Check if token is actually "undefined" string or other invalid values
+        if (token === 'undefined' || token === 'null' || token === '' || token.length < 20) {
+          console.log('❌ Invalid token detected:', token);
+          console.log('Token type:', typeof token);
+          console.log('Token length:', token.length);
+          clearCorruptedToken();
+          router.push('/admin/login');
+          return;
+        }
+        
+        // Additional check for malformed tokens
+        if (typeof token !== 'string' || token.includes('undefined') || token.includes('null')) {
+          console.log('❌ Malformed token detected:', token);
+          clearCorruptedToken();
+          router.push('/admin/login');
+          return;
+        }
+
+        // First check if backend is accessible
+        try {
+          const healthResponse = await fetch('http://localhost:5001/api/health', {
+            method: 'GET',
+            signal: AbortSignal.timeout(5000) // 5 second timeout
+          });
+          
+          if (!healthResponse.ok) {
+            console.log('Backend health check failed');
+            throw new Error('Backend unavailable');
+          }
+        } catch (healthError) {
+          console.error('Backend health check failed:', healthError);
+          throw new Error('Backend server is not accessible');
+        }
+
+        // Check if token is expired (basic check)
+        try {
+          console.log('🔍 DEBUGGING TOKEN:');
+          console.log('Token length:', token.length);
+          console.log('Token starts with:', token.substring(0, 20));
+          console.log('Token ends with:', token.substring(token.length - 20));
+          console.log('Contains dots:', token.includes('.'));
+          console.log('Number of dots:', (token.match(/\./g) || []).length);
+          
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Date.now() / 1000;
+          
+          if (tokenPayload.exp && tokenPayload.exp < currentTime) {
+            console.log('Token expired, redirecting to login');
+            clearCorruptedToken();
+            router.push('/admin/login');
+            return;
+          }
+
+          console.log('✅ Token is valid!');
+        } catch (parseError) {
+          console.log('❌ TOKEN FORMAT ERROR:');
+          console.log('Error message:', parseError.message);
+          console.log('Token preview:', token.substring(0, 100));
+          clearCorruptedToken();
+          router.push('/admin/login');
+          return;
+        }
+
+        console.log('🔍 Making auth/me request with token:', token.substring(0, 20) + '...');
+        
+        const response = await fetch('http://localhost:5001/api/auth/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('🔍 Auth/me response status:', response.status);
+        console.log('🔍 Auth/me response ok:', response.ok);
+
+        if (response.status === 401) {
+          console.log('Token unauthorized, redirecting to login');
+          clearCorruptedToken();
+          router.push('/admin/login');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Authentication failed: ${response.status} ${response.statusText}`);
+        }
+
+        const userData = await response.json();
+        
+        // Check if user has admin or author role
+        if (userData.data.role !== 'admin' && userData.data.role !== 'author') {
+          console.log('❌ User does not have admin or author role:', userData.data.role);
+          clearCorruptedToken();
+          router.push('/admin/login');
+          return;
+        }
+        
+        console.log('✅ User authenticated with role:', userData.data.role);
+        
+        setUser(userData.data); // Extract user data from response
       } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-
-    // Only fetch from backend if no cached data
-    fetchUserData(token);
-  }, [router]);
-
-  const fetchUserData = async (token) => {
-    try {
-      const response = await fetch('http://localhost:5001/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data.role === 'admin' || data.data.role === 'author') {
-          setUser(data.data);
-        } else {
-          router.push('/');
-        }
-      } else {
+        console.error('Auth check failed:', error);
+        clearCorruptedToken();
         router.push('/admin/login');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      router.push('/admin/login');
-    }
-  };
+    };
+
+    checkAuth();
+  }, [router, pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearCorruptedToken();
     router.push('/admin/login');
   };
 
-  if (!user) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading admin panel...</p>
-      </div>
-    </div>;
+  // Check if this is the login page - return early without admin layout
+  if (pathname === '/admin/login') {
+    // If user is already logged in, redirect to admin dashboard
+    if (user) {
+      router.push('/admin');
+      return null;
+    }
+    return <>{children}</>;
   }
 
-  const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Posts', href: '/admin/posts', icon: DocumentTextIcon },
-    { name: 'Categories', href: '/admin/categories', icon: FolderIcon },
-    { name: 'Users', href: '/admin/users', icon: UsersIcon, adminOnly: true },
-    { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
-    { name: 'Settings', href: '/admin/settings', icon: CogIcon },
-  ];
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">Blog Admin</h1>
+  if (!user) {
+    return null;
+  }
+
+  // Check if user has permission to access the current page
+  if (isAdminOnlyPage() && !hasPermission('admin')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+          <p className="text-gray-600 mb-4">
+            This page requires administrator privileges.
+          </p>
           <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600"
+            onClick={() => router.push('/admin')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            Go to Dashboard
           </button>
         </div>
-
-        <nav className="mt-8 px-4">
-          <div className="space-y-2">
-            {navigation.map((item) => {
-              if (item.adminOnly && user.role !== 'admin') return null;
-              
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-                >
-                  <item.icon className="h-5 w-5 mr-3" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-
-        {/* User info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
-                <span className="text-sm font-medium text-white">
-                  {user.name?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">{user.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="ml-2 p-1 rounded-md text-gray-400 hover:text-gray-600"
-            >
-              <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
       </div>
+    );
+  }
 
-      {/* Main content */}
-      <div className="lg:pl-64">
-        {/* Top bar */}
-        <div className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between h-16 px-6">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">
-                Welcome back, {user.name}!
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Page content */}
-        <main className="p-6">
+  return (
+    <>
+    <div className="min-h-screen  w-full overflow-y-hidden relative">
+      <Sidebar 
+        user={user}
+        onLogout={handleLogout}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        onCollapse={(collapsed) => setSidebarCollapsed(collapsed)}
+      />
+      <div className={`transition-all duration-300 md:pl-0 ${sidebarCollapsed ? 'md:ml-20' : 'md:ml-72'}`}>
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <main className="py-8 px-4 sm:px-6 lg:px-8 w-full min-h-[85vh] overflow-y-hidden ">
           {children}
         </main>
       </div>
-
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
+    </>
   );
 }
